@@ -18,12 +18,17 @@ def login():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
-        user = User.query.filter_by(email=email)
-        if user:
-            return render_template("user_dashboard.html")
-        else:
-            # Handle the case where the user is not found
-            return render_template('login.html')
+        # is_admin = request.form.get('is_admin')
+        user = User.query.filter_by(email=email, password = password)
+        # is_admin = User.query.filter_by(is_admin = is_admin)
+        # if user and user.is_admin == 0:    
+        #     return render_template("admin_dashboard.html")
+        # elif user and user.is_admin == 1:
+        #     return render_template("user_dashboard.html")
+        # else:
+        #     return render_template('login.html' ,msg = "Invalid user")
+        return redirect(url_for("admin_dashboard"))
+
     
 
 
@@ -37,18 +42,21 @@ def register():
         password = request.form.get('password')
         full_name = request.form.get('full_name')
         qualification = request.form.get('qualification')
-        # is_admin = request.form.get('is_admin')
+        is_admin = request.form.get('is_admin')
         dob = request.form.get('DOB')
 
-# Convert DOB to string
-        dob_str=request.form.get("dob")
-        dob = datetime.strptime(dob_str, "%Y-%m-%d").date()
 
-        user = User(email=email, password=password, full_name=full_name, qualification=qualification, dob=dob_str)
+        dob_str = datetime.strptime(dob, "%Y-%m-%d").date()
+
+        user = User(email=email, password=password, full_name=full_name, qualification=qualification, is_admin = is_admin,dob=dob_str)
         db.session.add(user)
         db.session.commit()
 
     return render_template('register.html')
+
+@app.route("/admin_dashboard")
+def admin_dashboard():
+    return render_template("admin_dashboard.html")
 
 if __name__ == '__main__':
     app.run(debug=True)
