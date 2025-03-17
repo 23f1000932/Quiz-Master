@@ -18,28 +18,28 @@ class User(db.Model):
 class Subject(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(100), nullable=False) 
-    discription = db.Column(db.String(100),  nullable = True)
-    chapter_name = db.relationship('Chapter', backref='Subject', lazy=True)
+    description = db.Column(db.String(100),  nullable = True)
+    chapters = db.relationship('Chapter', backref='subject', lazy=True)
 
 class Chapter(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(100), nullable=False)
-    discription = db.Column(db.String(100),  nullable = True)
-    no_of_Qusetion = db.Column(db.Integer, default = 1)
-    subject_id = db.Column(db.Integer, db.forigenKey('Subject.id'), nullable = False)
-    quizzes = db.relationship('Quiz', backref='Chapter', lazy=True)
+    description = db.Column(db.String(100),  nullable = True)
+    no_of_question = db.Column(db.String)
+    subject_id = db.Column(db.Integer, db.ForeignKey('subject.id'), nullable = False)
+    quizzes = db.relationship('Quiz', backref='chapter', lazy=True)
 
 class Quiz(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    chapter_id = db.Column(db.Integer, db.ForeignKey('Chapter.id'), nullable = False)
-    date_of_quiz = db.Column(db.Date)
-    time_duration = db.Column(db.string(10)) #HH:MM
+    chapter_id = db.Column(db.Integer, db.ForeignKey('chapter.id'), nullable = False)
+    date_of_quiz = db.Column(db.String(10))
+    time_duration = db.Column(db.String(10)) #HH:MM
     remark = db.Column(db.String(100), nullable = True)
-    question = db.relationship('Question', backref = 'Quiz', lazy = True)
+    question = db.relationship('Question', backref = 'quiz', lazy = True)
 
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    quiz_id = db.Column (db.Integer , db.ForigenKey("Quiz.id"), nullable = False)
+    quiz_id = db.Column (db.Integer , db.ForeignKey("quiz.id"), nullable = False)
     q_statement = db.Column(db.String(100), nullable = False)
     o_1 = db.Column(db.String(50), nullable = False)
     o_2 = db.Column(db.String(50), nullable = False)

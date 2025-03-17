@@ -8,10 +8,47 @@
 <body>
     <div id = "nav_bar">
         <a href="admin_dashboard.html">Home</a>  |  <a href="quiz.html">Quiz</a>  |  <a href="summary.html">Summary</a>     |  <a href="/logout">Logout</a>
+        <form action="/">
+            <input type="text" name="search_key" >
+            <button>Search</button>
+        </form>
     </div>
 
-    <div id = "add">
-        <a href="add_subject.html">
+
+
+
+    <div id = "content">
+        {% for s in subjects %}
+           <table border = "1px">
+            {{s.name}}
+            <tr>
+                <th>Chapter name</th>
+                <th>No.of Questions</th>
+                <th>Action</th>
+            </tr>
+            {% for c in s.chapters %}
+                <tr>
+                    <td>{{ c.name }}</td>
+                    <td>{{ c.no_of_question }}</td>
+                    <td>
+                        <a href="/edit_chapter?id={{c.id}}"><button>Edit</button></a> /
+                        <a href="/delete_chapter?id={{c.id}}"><button>Delete</button></a>
+                    </td>
+                    
+                </tr>
+            {% endfor %}
+                <div id = "/add_chapter">
+                <td><a href="{{ url_for('add_chapter') }}"></a><button>Add Chapter</button></a></td>
+                </div>
+           </table> 
+        {% endfor %}
+    </div>
+
+
+
+
+    <div id = "/add_subject">
+        <a href="{{ url_for('add_subject') }}">
             <button>Add Subject</button>
         </a>
     </div>
