@@ -78,7 +78,7 @@ def add_subject():
 
 #CRUD operation on Chapter
 #Add new chapter "/add_chapter"
-@app.route("/add_chapter", methods = ["POST"])
+@app.route("/add_chapter", methods = ["GET","POST"])
 def add_chapter():
     if request.method =='POST':
         name = request.form.get('name')
@@ -94,6 +94,11 @@ def add_chapter():
 
 
 # "/edit_chapter/chapters?id={c.id}"
+
+
+
+
+
 # "/delete_chapter/chapters?id={c.id}"
 @app.route('/delete_chapter')
 def delete_chapter():
