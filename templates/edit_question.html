@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Question</title>
+</head>
+<body>
+    <h1>Edit Question</h1>
+    <form method="POST">
+        <input type="hidden" name="quiz_id" value="{{ question.quiz_id }}">
+        
+        <label>Question Statement:</label><br>
+        <input type="text" name="q_statement" value="{{ question.q_statement }}" required>
+        <br>
+        
+        <label>Option 1:</label><br>
+        <input type="text" name="o_1" value="{{ question.o_1 }}" required>
+        <br>
+        
+        <label>Option 2:</label><br>
+        <input type="text" name="o_2" value="{{ question.o_2 }}" required>
+        <br>
+        
+        <label>Option 3:</label><br>
+        <input type="text" name="o_3" value="{{ question.o_3 }}" required>
+        <br>
+        
+        <label>Option 4:</label><br>
+        <input type="text" name="o_4" value="{{ question.o_4 }}" required>
+        <br>
+        
+        <label>Correct Option:</label><br>
+        <select name="correct_option" required>
+            <option value="1" {% if question.correct_option == 1 %}selected{% endif %}>Option 1</option>
+            <option value="2" {% if question.correct_option == 2 %}selected{% endif %}>Option 2</option>
+            <option value="3" {% if question.correct_option == 3 %}selected{% endif %}>Option 3</option>
+            <option value="4" {% if question.correct_option == 4 %}selected{% endif %}>Option 4</option>
+        </select>
+        <br><br>
+        
+        <button type="submit">Update Question</button>
+    </form>
+</body>
+</html>

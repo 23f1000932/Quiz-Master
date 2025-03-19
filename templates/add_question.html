@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h1>Add Question</h1>
+    <form method="POST">
+        <input type="hidden" name="quiz_id" value="{{ quiz_id }}">
+        <label>Question Statement: <input type="text" name="q_statement" required></label>
+        <br>
+        <label>Option 1: <input type="text" name="o_1" required></label>
+        <br>
+        <label>Option 2: <input type="text" name="o_2" required></label>
+        <br>
+        <label>Option 3: <input type="text" name="o_3" required></label>
+        <br>
+        <label>Option 4: <input type="text" name="o_4" required></label>
+        <br>
+        <label>Correct Option (1-4): 
+            <input type="number" name="correct_option" min="1" max="4" required>
+        </label>
+        <br>
+        <button type="submit">Add Question</button>
+    </form>
+</body>
+</html>

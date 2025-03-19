@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h1>New Quiz</h1>
+    <form method="POST">
+        <label>Chapter:
+            <select name="chapter_id">
+                {% for chapter in chapters %}
+                <option value="{{ chapter.id }}">{{ chapter.name }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <br>
+        <label>Remark: <input type="text" name="remark" required></label>
+        
+        
+        <br>
+        <label>Time Duration: <input type="text" name="time_duration" required></label>
+        <br>
+        <button type="submit">Create Quiz</button>
+    </form>
+</body>
+</html>

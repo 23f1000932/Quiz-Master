@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Management</title>
+</head>
+<body>
+    <div id = "nav_bar">
+        <a href="{{ url_for('home') }}">Home</a>  |
+          <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>  |
+            <a href="{{ url_for('admin_summary') }}">Summary</a>     |
+              <a href="{{ url_for('login') }}">Logout</a>
+        <form action="/">
+            <input type="text" name="search_key" >
+            <button>Search</button>
+        </form>
+
+        <h1>Quiz Management</h1>
+
+        <div id = "content">
+            {% for subject in subjects %}
+                {% for chapter in subject.chapters %}
+                    {% for quiz in chapter.quizzes %}
+                    <table border = "1px">
+                    <tr>
+                        <th>
+                            <h3>{{chapter.name}} ({{subject.name}})</h3>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>ID</th>
+                        <th>Question Statement</th>
+                        <th>Actions</th>
+                    </tr>
+                    {% for question in quiz.question %}
+                    <tr>
+                        <td>{{question.id}}</td>
+                        <td>{{question.q_statement}}</td>
+                        <td>
+                            <a href="{{ url_for('edit_question', id=question.id) }}"><button>Edit</button></a> /
+                            <a href="{{ url_for('delete_question', id=question.id) }}"><button>Delete</button></a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                    <tr>
+                    <td>
+                    <a href="{{ url_for('add_question', quiz_id=quiz.id) }}">
+                        <button>+ Question</button>
+                    </a>
+                    </td>
+                    </tr>
+                </table>
+
+
+                    {% endfor %}
+                {% endfor %}
+            {% endfor %}
+        </div>
+        
+        <div id = "/add_quiz">
+            <a href="{{ url_for('add_quiz') }}">
+                <button>Add Quiz</button>
+            </a>
+</body>
+</html>
