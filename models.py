@@ -12,7 +12,6 @@ class User(db.Model):
     full_name = db.Column(db.String(150), nullable=False)
     qualification = db.Column(db.String(150))
     dob = db.Column(db.Date)
-    is_admin = db.Column(db.Integer, default=1)
     # scores = db.relationship('Score', backref='user', lazy=True)
 
 class Subject(db.Model):

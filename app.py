@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 from datetime import datetime
+
 from models import db, User, Subject, Chapter, Quiz, Question
 app = Flask(__name__)
 
@@ -13,37 +14,39 @@ db.create_all()
 def home():
     return redirect(url_for('login'))
 
-@app.route('/login', methods = ['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
-        # is_admin = request.form.get('is_admin')
-        user = User.query.filter_by(email=email, password = password)
-        # is_admin = User.query.filter_by(is_admin = is_admin)
-        # if user and user.is_admin == 0:    
-        #     return render_template("admin_dashboard.html")
-        # elif user and user.is_admin == 1:
-        #     return render_template("user_dashboard.html")
-        # else:
-        #     return render_template('login.html' ,msg = "Invalid user")
-        return redirect(url_for("admin_dashboard"))
+        user = User.query.filter_by(email=email, password = password).first()
+
+        if user:
+            if user.email == "ayanhussain4212@gmail.com":
+                return redirect(url_for('admin_dashboard'))
+            else:
+                return redirect(url_for('user_dashboard'))
+        else:
+            return render_template("login.html", msg = "Invalid email or password")
     return render_template('login.html')
+
+
 
 @app.route('/register', methods = ['GET', 'POST'])
 def register():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
+
+
         full_name = request.form.get('full_name')
         qualification = request.form.get('qualification')
-        is_admin = request.form.get('is_admin')
         dob = request.form.get('DOB')
 
 
         dob_str = datetime.strptime(dob, "%Y-%m-%d").date()
 
-        user = User(email=email, password=password, full_name=full_name, qualification=qualification, is_admin = is_admin,dob=dob_str)
+        user = User(email=email, password=password, full_name=full_name, qualification=qualification, dob=dob_str)
         db.session.add(user)
         db.session.commit()
 
@@ -203,6 +206,11 @@ def delete_question(id):
 @app.route("/admin_summary")
 def admin_summary():
     return render_template("admin_summary.html")
+
+
+@app.route("/user_dashboard")
+def user_dashboard():
+    return render_template('user_dashboard.html')
 
 
 if __name__ == '__main__':
