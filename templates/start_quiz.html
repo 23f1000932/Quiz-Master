@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h1>Quiz: {{ quiz.remark }}</h1>
+    <form method="POST" action="#">
+        {% for question in questions %}
+        <fieldset>
+            <h3>Question {{ loop.index }}: {{ question.q_statement }}</h3>
+            <input type="radio" name="q{{ question.id }}" value="1"> {{ question.o_1 }}<br>
+            <input type="radio" name="q{{ question.id }}" value="2"> {{ question.o_2 }}<br>
+            <input type="radio" name="q{{ question.id }}" value="3"> {{ question.o_3 }}<br>
+            <input type="radio" name="q{{ question.id }}" value="4"> {{ question.o_4 }}<br>
+        </fieldset>
+        {% endfor %}
+        <button type="submit">Submit Answers</button>
+    </form>
+</body>
+</html>

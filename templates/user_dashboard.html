@@ -1,1 +1,43 @@
-<h1>this is user dashboard</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard</title>
+</head>
+<body>
+    <div id="nav_bar">
+        <a href="{{ url_for('user_dashboard') }}">Home</a>  |  
+        <a href="#scores">Scores</a>  |  
+        <a href="#summary">Summary</a> |  
+        <a href="{{ url_for('login') }}">Logout</a>
+        <form action="#">
+            <input type="text" name="search_key">
+            <button>Search</button>
+        </form>
+        <span><h1>Welcome User</h1></span>
+    </div>
+
+    <h2>Upcoming Quizzes</h2>
+    <table border="1px">
+        <tr>
+            <th>ID</th>
+            <th>No. of Questions</th>
+            <th>Date</th>
+            <th>Duration (HH:MM)</th>
+            <th>Action</th>
+        </tr>
+        {% for quiz in quizzes %}
+        <tr>
+            <td>{{ quiz.id }}</td>
+            <td>{{ quiz.chapter.no_of_question }}</td>
+            <td>{{ quiz.date_of_quiz }}</td>
+            <td>{{ quiz.time_duration }}</td>
+            <td>
+                <a href="{{ url_for('view_quiz', quiz_id=quiz.id) }}"><button>View</button></a>
+                <a href="{{ url_for('start_quiz', quiz_id=quiz.id) }}"><button>Start</button></a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

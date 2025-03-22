@@ -23,10 +23,15 @@
                 {% for chapter in subject.chapters %}
                     {% for quiz in chapter.quizzes %}
                     <table border = "1px">
+                        
                     <tr>
                         <th>
                             <h3>{{chapter.name}} ({{subject.name}})</h3>
                         </th>
+                        <td><a href="/delete_quiz?id={{ quiz.id }}" 
+                            style="margin-left: 20px;">
+                                <button>Delete quiz</button>
+                        </a></td>
                     </tr>
                     <tr>
                         <th>ID</th>

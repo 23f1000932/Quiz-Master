@@ -23,7 +23,15 @@
     <div id = "content">
         {% for s in subjects %}
            <table border = "1px">
-            {{s.name}}
+            <tr>
+                <th colspan="3">
+                    {{ s.name }}
+                    <a href="/delete_subject?id={{ s.id }}" 
+                       style="margin-left: 20px;">
+                        <button>Delete Subject</button>
+                    </a>
+                </th>
+            </tr>
             <tr>
                 <th>Chapter name</th>
                 <th>No.of Questions</th>
@@ -43,11 +51,14 @@
                     
                 </tr>
             {% endfor %}
-                <div id = "/add_chapter">
-                <td><a href="{{ url_for('add_chapter') }}">
-
-                <button>Add Chapter</button></a></td>
-                </div>
+            <tr>
+                <td colspan="3">
+                    <a href="{{ url_for('add_chapter', subject_id=s.id) }}">
+                        <button>Add Chapter</button>
+                    </a>
+                    </a>
+                </td>
+            </tr>
            </table> 
         {% endfor %}
     </div>

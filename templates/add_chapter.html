@@ -1,23 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Chapter</title>
-</head>
+<html>
 <body>
-    <h1>New Chapter</h1>
-    <form action="/add_chapter" method = "POST">
-        <br><label for="name">Name:</label>
-        <input type="text" name = "name", id = "name">
-        <br><label for="description">Description:</label>
-        <input type="text" name="description" id="description">
-        <br><label for="no_of_question">No. of Question:</label>
-        <input type="text" name="no_of_question" id="no_of_question">
-        <br><label for="subject_id">Subject id:</label>
-        <input type="text" name="subject_id" id="subject_id">
-
-        <br><button type="submit">Save</button>
+    <h1>New Chapter for {{ subject.name }}</h1>
+    <form action="/add_chapter" method="POST">
+        <input type="hidden" name="subject_id" value="{{ subject.id }}">
+        
+        <label for="name">Name:</label>
+        <input type="text" name="name" id="name" required><br>
+        
+        <label for="description">Description:</label>
+        <input type="text" name="description" id="description"><br>
+        
+        <label for="no_of_question">No. of Questions:</label>
+        <input type="number" name="no_of_question" id="no_of_question" required><br>
+        
+        <button type="submit">Save</button>
     </form>
 </body>
 </html>

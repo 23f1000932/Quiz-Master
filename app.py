@@ -76,44 +76,81 @@ def add_subject():
     return render_template('add_subject.html')
 
 
+@app.route('/delete_subject')
+def delete_subject():
+    id = request.args.get('id')
+    if id:
+        subject = Subject.query.get(id)
+        if subject:
+            # Delete associated chapters first
+            Chapter.query.filter_by(subject_id=id).delete()
+            # Then delete the subject
+            db.session.delete(subject)
+            db.session.commit()
+            return redirect(url_for("admin_dashboard"))
+        else:
+            return "Subject not found", 404
+    return "Invalid request", 400
+
+
 #CRUD operation on Chapter
 
 
 #Add new chapter "/add_chapter"
-@app.route("/add_chapter", methods = ["GET","POST"])
+@app.route("/add_chapter", methods=["GET", "POST"])
 def add_chapter():
-    if request.method =='POST':
-        name = request.form.get('name')
-        description = request.form.get('description')
-        no_of_question = request.form.get('no_of_question')
-        subject_id = request.form.get('subject_id')
-        c = Chapter(name = name, description = description, no_of_question = no_of_question, subject_id = subject_id)
-        db.session.add(c)
+    # Get subject_id from URL parameters
+    subject_id = request.args.get('subject_id')
+    
+    if request.method == 'POST':
+        # Create new chapter with form data
+        new_chapter = Chapter(
+            name=request.form.get('name'),
+            description=request.form.get('description'),
+            no_of_question=request.form.get('no_of_question'),
+            subject_id=request.form.get('subject_id')  # From hidden input
+        )
+        db.session.add(new_chapter)
         db.session.commit()
         return redirect(url_for('admin_dashboard'))
-    return render_template('add_chapter.html')
+    
+    # GET request handling
+    if not subject_id:
+        return redirect(url_for('admin_dashboard'))
+    
+    # Get subject for display
+    subject = Subject.query.get(subject_id)
+    if not subject:
+        return redirect(url_for('admin_dashboard'))
+    
+    return render_template('add_chapter.html', subject=subject)
 
 
 # "/edit_chapter/chapters?id={c.id}"
-@app.route("/edit_chapter", methods = ["GET","POST"])
+@app.route("/edit_chapter", methods=["GET", "POST"])
 def edit_chapter():
-    id = request.args.get('id')
-    obj = Chapter.query.filter_by(id=id).first()
-    if request.method =='POST':
-        obj.name = request.form.get('name')
-        obj.description = request.form.get('description')
-        obj.no_of_question = request.form.get('no_of_question')
-        obj.subject_id = request.form.get('subject_id')
+    chapter_id = request.args.get('id')
+    chapter = Chapter.query.get_or_404(chapter_id)
+    
+    if request.method == 'POST':
+        chapter.name = request.form.get('name')
+        chapter.description = request.form.get('description')
+        chapter.no_of_question = request.form.get('no_of_question')
+        chapter.subject_id = request.form.get('subject_id')
         db.session.commit()
         return redirect(url_for('admin_dashboard'))
-    return render_template('edit_chapter.html')
-
+    
+    subjects = Subject.query.all()
+    return render_template('edit_chapter.html', 
+                         chapter=chapter,
+                         subjects=subjects)
 
 # "/delete_chapter/chapters?id={c.id}"
 @app.route('/delete_chapter')
 def delete_chapter():
     id = request.args.get('id')
     if id:
+        Quiz.query.filter_by(Chapter_id=id).delete()
         obj = Chapter.query.filter_by(id=id).first()
         if obj:
             db.session.delete(obj)
@@ -155,6 +192,23 @@ def add_quiz():
         return redirect(url_for('quiz_management'))
     chapters = Chapter.query.all()
     return render_template('add_quiz.html', chapters=chapters)
+
+
+@app.route("/delete_quiz")
+def delete_quiz():
+    id = request.args.get('id')
+    if id:
+        quiz = Quiz.query.get(id)
+        if quiz:
+            # Delete associated Question first
+            Question.query.filter_by(quiz_id=id).delete()
+            # Then delete the quiz
+            db.session.delete(quiz)
+            db.session.commit()
+            return redirect(url_for("admin_dashboard"))
+        else:
+            return "Subject not found", 404
+    return "Invalid request", 400
 
 #Add Question
 @app.route("/add_question/<int:quiz_id>", methods=['GET', 'POST'])
@@ -210,7 +264,22 @@ def admin_summary():
 
 @app.route("/user_dashboard")
 def user_dashboard():
-    return render_template('user_dashboard.html')
+    # Get all quizzes with their chapters
+    quizzes = Quiz.query.all()
+    return render_template('user_dashboard.html', quizzes=quizzes)
+
+
+@app.route("/view_quiz/<int:quiz_id>")
+def view_quiz(quiz_id):
+    quiz = Quiz.query.get_or_404(quiz_id)
+    return render_template('view_quiz.html', quiz=quiz)
+
+
+@app.route("/start_quiz/<int:quiz_id>")
+def start_quiz(quiz_id):
+    quiz = Quiz.query.get_or_404(quiz_id)
+    questions = quiz.question
+    return render_template('start_quiz.html', quiz=quiz, questions=questions)
 
 
 if __name__ == '__main__':
