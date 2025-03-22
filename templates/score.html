@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz Scores</title>
+</head>
+<body>
+    <div id="nav_bar">
+        <a href="{{ url_for('user_dashboard', user_id=user.id) }}">Home</a> | 
+        <a href="{{ url_for('score', user_id=user.id) }}">Scores</a> | 
+        <a href="{{ url_for('login') }}">Logout</a>
+    </div>
+
+    <h1>Quiz Scores for {{ user.full_name }}</h1>
+    
+    <table border="1">
+        <tr>
+            <th>Quiz Name</th>
+            <th>Score</th>
+            <th>Date</th>
+            <th>Chapter</th>
+        </tr>
+        {% for score in user.scores %}
+        <tr>
+            <td>{{ score.quiz.remark }}</td>
+            <td>{{ score.score }}/{{ score.quiz.questions|length }}</td>
+            <td>{{ score.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td>{{ score.quiz.chapter.name }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

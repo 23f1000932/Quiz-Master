@@ -2,8 +2,8 @@
 <html>
 <body>
     <h1>Quiz: {{ quiz.remark }}</h1>
-    <form method="POST" action="#">
-        {% for question in questions %}
+    <form method="POST" action="{{ url_for('start_quiz', quiz_id=quiz.id, user_id=user.id) }}">
+        {% for question in quiz.question %}
         <fieldset>
             <h3>Question {{ loop.index }}: {{ question.q_statement }}</h3>
             <input type="radio" name="q{{ question.id }}" value="1"> {{ question.o_1 }}<br>

@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-
+from datetime import datetime
 
 # Initialize SQLAlchemy
 db = SQLAlchemy()
@@ -12,7 +12,7 @@ class User(db.Model):
     full_name = db.Column(db.String(150), nullable=False)
     qualification = db.Column(db.String(150))
     dob = db.Column(db.Date)
-    # scores = db.relationship('Score', backref='user', lazy=True)
+    scores = db.relationship('Score', backref='user', lazy=True)
 
 class Subject(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -24,9 +24,13 @@ class Chapter(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(100),  nullable = True)
-    no_of_question = db.Column(db.String)
+    # no_of_question = db.Column(db.String)
     subject_id = db.Column(db.Integer, db.ForeignKey('subject.id'), nullable = False)
     quizzes = db.relationship('Quiz', backref='chapter', lazy=True)
+
+    @property
+    def total_question(self):
+        return sum(len(quiz.question) for quiz in self.quizzes)
 
 class Quiz(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -46,4 +50,12 @@ class Question(db.Model):
     o_4 = db.Column(db.String(50), nullable = False)
     correct_option = db.Column(db.Integer, nullable = False)
 
-    
+class Score(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    quiz_id = db.Column(db.Integer, db.ForeignKey('quiz.id'), nullable=False)
+    score = db.Column(db.Integer, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+    quiz = db.relationship('Quiz', backref='scores')   

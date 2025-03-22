@@ -6,8 +6,8 @@
     <p>Chapter: {{ quiz.chapter.name }}</p>
     <p>Date: {{ quiz.date_of_quiz }}</p>
     <p>Duration: {{ quiz.time_duration }}</p>
-    <p>Total Questions: {{ quiz.chapter.no_of_question }}</p>
-    <a href="{{ url_for('start_quiz', quiz_id=quiz.id) }}"><button>Start Now</button></a>
-    <a href="{{ url_for('user_dashboard')}}"><button>Close</button></a>
+    <p>Total Questions: {{ quiz.chapter.total_question }}</p>
+    <a href="{{ url_for('start_quiz', quiz_id=quiz.id, user_id=user.id) }}"><button>Start Now</button></a>
+    <a href="{{ url_for('user_dashboard',  user_id=user.id)}}"><button>Close</button></a>
 </body>
 </html>

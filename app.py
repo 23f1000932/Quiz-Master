@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from datetime import datetime
 
-from models import db, User, Subject, Chapter, Quiz, Question
+from models import db, User, Subject, Chapter, Quiz, Question, Score
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
@@ -25,7 +25,7 @@ def login():
             if user.email == "ayanhussain4212@gmail.com":
                 return redirect(url_for('admin_dashboard'))
             else:
-                return redirect(url_for('user_dashboard'))
+                return redirect(url_for('user_dashboard', user_id=user.id))
         else:
             return render_template("login.html", msg = "Invalid email or password")
     return render_template('login.html')
@@ -107,7 +107,7 @@ def add_chapter():
         new_chapter = Chapter(
             name=request.form.get('name'),
             description=request.form.get('description'),
-            no_of_question=request.form.get('no_of_question'),
+            # no_of_question=request.form.get('no_of_question'),
             subject_id=request.form.get('subject_id')  # From hidden input
         )
         db.session.add(new_chapter)
@@ -135,7 +135,7 @@ def edit_chapter():
     if request.method == 'POST':
         chapter.name = request.form.get('name')
         chapter.description = request.form.get('description')
-        chapter.no_of_question = request.form.get('no_of_question')
+        # chapter.no_of_question = request.form.get('no_of_question')
         chapter.subject_id = request.form.get('subject_id')
         db.session.commit()
         return redirect(url_for('admin_dashboard'))
@@ -262,24 +262,56 @@ def admin_summary():
     return render_template("admin_summary.html")
 
 
-@app.route("/user_dashboard")
-def user_dashboard():
-    # Get all quizzes with their chapters
+@app.route("/user_dashboard/<int:user_id>")
+def user_dashboard(user_id):
+    user = User.query.get_or_404(user_id)
     quizzes = Quiz.query.all()
-    return render_template('user_dashboard.html', quizzes=quizzes)
+    return render_template('user_dashboard.html', quizzes=quizzes, user=user)
 
 
-@app.route("/view_quiz/<int:quiz_id>")
-def view_quiz(quiz_id):
+@app.route("/view_quiz/<int:quiz_id>/<int:user_id>")
+def view_quiz(quiz_id, user_id):
     quiz = Quiz.query.get_or_404(quiz_id)
-    return render_template('view_quiz.html', quiz=quiz)
+    user = User.query.get_or_404(user_id)
+    return render_template('view_quiz.html', quiz=quiz, user = user)
 
 
-@app.route("/start_quiz/<int:quiz_id>")
-def start_quiz(quiz_id):
+@app.route("/start_quiz/<int:quiz_id>/<int:user_id>", methods=['GET', 'POST'])
+def start_quiz(quiz_id, user_id):
     quiz = Quiz.query.get_or_404(quiz_id)
-    questions = quiz.question
-    return render_template('start_quiz.html', quiz=quiz, questions=questions)
+    user = User.query.get_or_404(user_id)
+    
+    if request.method == 'POST':
+        score = 0
+        for question in quiz.question:
+            answer = request.form.get(f'q{question.id}')
+            if answer and int(answer) == question.correct_option:
+                score += 1
+                
+        new_score = Score(
+            user_id=user_id,
+            quiz_id=quiz_id,
+            score=score
+        )
+        db.session.add(new_score)
+        db.session.commit()
+        
+        return redirect(url_for('score', user_id=user_id))
+    
+    return render_template('start_quiz.html', quiz=quiz, user=user)
+
+
+
+
+
+
+#                                            Score of user
+
+@app.route("/scores/<int:user_id>")
+def score(user_id):
+    user = User.query.get_or_404(user_id)
+    return render_template('score.html', user=user)
+
 
 
 if __name__ == '__main__':
