@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Summary</title>
+</head>
+<body>
+    <div id="nav_bar">
+        <a href="{{ url_for('user_dashboard', user_id=user.id) }}">Home</a> | 
+        <a href="{{ url_for('score', user_id=user.id) }}">Scores</a> | 
+        <a href="{{ url_for('user_summary', user_id=user.id) }}">Summary</a> | 
+        <a href="{{ url_for('login') }}">Logout</a>
+    </div>
+
+    <h1>Performance Summary for {{ user.full_name }}</h1>
+    
+    {% if plot_exists %}
+    <div style="text-align: center; margin: 20px;">
+        <img src="{{ plot_url }}" alt="Score Chart" style="max-width: 800px;">
+        <p style="margin-top: 10px;">
+            <span style="color: #4CAF50;">■</span> Your Score | 
+            <span style="color: #2196F3;">■</span> Total Questions
+        </p>
+    </div>
+    {% else %}
+    <p>No quiz attempts yet!</p>
+    {% endif %}
+</body>
+</html>

@@ -22,7 +22,7 @@
         {% for score in user.scores %}
         <tr>
             <td>{{ score.quiz.remark }}</td>
-            <td>{{ score.score }}/{{ score.quiz.questions|length }}</td>
+            <td>{{ score.score }}/{{ score.quiz.question|length }}</td>
             <td>{{ score.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
             <td>{{ score.quiz.chapter.name }}</td>
         </tr>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Summary</title>
+</head>
+<body>
+    <div id="nav_bar">
+        <a href="{{ url_for('admin_dashboard') }}">Home</a> | 
+        <a href="{{ url_for('quiz_management') }}">Quizzes</a> | 
+        <a href="{{ url_for('admin_summary') }}">Summary</a> | 
+        <a href="{{ url_for('login') }}">Logout</a>
+    </div>
+
+    <h1>Admin Summary Report</h1>
+    
+    {% if plot_exists %}
+    <div style="text-align: center; margin: 20px;">
+        <img src="{{ plot_url }}" alt="Summary Chart" style="max-width: 1000px;">
+        <div style="margin-top: 20px;">
+            <span style="color: #FFA500;">■</span> Attempt Count | 
+            <span style="color: #008080;">■</span> Average Score
+        </div>
+    </div>
+    {% else %}
+    <p>No quizzes available for summary!</p>
+    {% endif %}
+</body>
+</html>

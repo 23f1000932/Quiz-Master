@@ -256,12 +256,6 @@ def delete_question(id):
 
 
 
-#summary route
-@app.route("/admin_summary")
-def admin_summary():
-    return render_template("admin_summary.html")
-
-
 @app.route("/user_dashboard/<int:user_id>")
 def user_dashboard(user_id):
     user = User.query.get_or_404(user_id)
@@ -313,6 +307,133 @@ def score(user_id):
     return render_template('score.html', user=user)
 
 
+
+import matplotlib
+matplotlib.use('Agg')  # Required for server environments
+import matplotlib.pyplot as plt
+import os
+
+@app.route("/user_summary/<int:user_id>")
+def user_summary(user_id):
+    user = User.query.get_or_404(user_id)
+    scores = Score.query.filter_by(user_id=user.id).all()
+    
+    if not scores:
+        return render_template('user_summary.html', user=user, plot_exists=False)
+
+    # Prepare chart data
+    quiz_ids = [f"Quiz {score.quiz.id}" for score in scores]
+    user_scores = [score.score for score in scores]
+    total_question = [len(score.quiz.question) for score in scores]
+
+    # Create plot
+    plt.figure(figsize=(10, 6))
+    bar_width = 0.35
+    index = range(len(quiz_ids))
+
+    bars1 = plt.bar(index, user_scores, bar_width, label='Your Score', color='#4CAF50')
+    bars2 = plt.bar([i + bar_width for i in index], total_question, bar_width, label='Total Questions', color='#2196F3')
+
+    plt.xlabel('Quizzes')
+    plt.ylabel('Number of Questions')
+    plt.title(f'Quiz Performance for {user.full_name}')
+    plt.xticks([i + bar_width/2 for i in index], quiz_ids)
+    plt.legend()
+
+    # Add value labels on top of bars
+    for bars in [bars1, bars2]:
+        for bar in bars:
+            height = bar.get_height()
+            plt.text(bar.get_x() + bar.get_width()/2., height,
+                     f'{int(height)}',
+                     ha='center', va='bottom')
+
+    # Save plot to static folder
+    static_dir = os.path.join(app.root_path, 'static')
+    if not os.path.exists(static_dir):
+        os.makedirs(static_dir)
+    
+    plot_path = os.path.join(static_dir, f'summary_{user_id}.png')
+    plt.savefig(plot_path, bbox_inches='tight')
+    plt.close()
+
+    return render_template('user_summary.html', 
+                         user=user,
+                         plot_exists=True,
+                         plot_url=url_for('static', filename=f'summary_{user_id}.png'))
+
+
+
+
+
+@app.route("/admin_summary")
+def admin_summary():
+    # Get all quizzes
+    quizzes = Quiz.query.all()
+    
+    if not quizzes:
+        return render_template("admin_summary.html", plot_exists=False)
+
+    # Prepare data
+    quiz_labels = []
+    attempt_counts = []
+    avg_scores = []
+
+    for quiz in quizzes:
+        quiz_labels.append(f"Quiz {quiz.id} ({quiz.chapter.name})")
+        
+        # Get all scores for this quiz
+        scores = Score.query.filter_by(quiz_id=quiz.id).all()
+        
+        attempt_counts.append(len(scores))
+        
+        if len(scores) > 0:
+            avg = sum([s.score for s in scores]) / len(scores)
+        else:
+            avg = 0
+        avg_scores.append(avg)
+
+    # Create plots
+    plt.figure(figsize=(15, 6))
+    
+    # Plot 1: Attempt Counts
+    plt.subplot(1, 2, 1)
+    bars1 = plt.bar(quiz_labels, attempt_counts, color='#FFA500')
+    plt.title('Number of Attempts per Quiz')
+    plt.xticks(rotation=45, ha='right')
+    plt.ylabel('Number of Users')
+    
+    # Add value labels
+    for bar in bars1:
+        height = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width()/2., height,
+                 f'{int(height)}',
+                 ha='center', va='bottom')
+
+    # Plot 2: Average Scores
+    plt.subplot(1, 2, 2)
+    bars2 = plt.bar(quiz_labels, avg_scores, color='#008080')
+    plt.title('Average Scores per Quiz')
+    plt.xticks(rotation=45, ha='right')
+    plt.ylabel('Average Score')
+    
+    # Add value labels
+    for bar in bars2:
+        height = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width()/2., height,
+                 f'{height:.1f}',
+                 ha='center', va='bottom')
+
+    # Save plot
+    plt.tight_layout()
+    static_dir = os.path.join(app.root_path, 'static')
+    plot_path = os.path.join(static_dir, 'admin_summary.png')
+    plt.savefig(plot_path, bbox_inches='tight')
+    plt.close()
+
+    return render_template('admin_summary.html',
+                         plot_exists=True,
+                         plot_url=url_for('static', filename='admin_summary.png'))
 
 if __name__ == '__main__':
     app.run(debug=True)
