@@ -7,6 +7,7 @@
     <div id="nav_bar">
         <a href="{{ url_for('user_dashboard', user_id=user.id) }}">Home</a> | 
         <a href="{{ url_for('score', user_id=user.id) }}">Scores</a> | 
+        <a href="{{ url_for('user_summary', user_id=user.id) }}">Summary</a>|
         <a href="{{ url_for('login') }}">Logout</a>
     </div>
 

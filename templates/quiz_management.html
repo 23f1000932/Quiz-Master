@@ -4,69 +4,134 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz Management</title>
+    <style>
+        .search-box {
+            margin: 15px 0;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 5px;
+        }
+        .no-results {
+            color: #666;
+            padding: 20px;
+        }
+        table {
+            margin: 20px 0;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+        }
+    </style>
 </head>
 <body>
-    <div id = "nav_bar">
-        <a href="{{ url_for('home') }}">Home</a>  |
-          <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>  |
-            <a href="{{ url_for('admin_summary') }}">Summary</a>     |
-              <a href="{{ url_for('login') }}">Logout</a>
-        <form action="/">
-            <input type="text" name="search_key" >
+    <div id="nav_bar">
+        <a href="{{ url_for('admin_dashboard') }}">Home</a>  |
+        <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>  |
+        <a href="{{ url_for('admin_summary') }}">Summary</a>     |
+        <a href="{{ url_for('login') }}">Logout</a>
+        <form action="{{ url_for('quiz_search') }}">
+            <input type="text" name="search_key" value="{{ search_key if search_key }}">
             <button>Search</button>
         </form>
 
         <h1>Quiz Management</h1>
 
-        <div id = "content">
-            {% for subject in subjects %}
-                {% for chapter in subject.chapters %}
-                    {% for quiz in chapter.quizzes %}
-                    <table border = "1px">
-                        
-                    <tr>
-                        <th>
-                            <h3>{{chapter.name}} ({{subject.name}})</h3>
-                        </th>
-                        <td><a href="/delete_quiz?id={{ quiz.id }}" 
-                            style="margin-left: 20px;">
-                                <button>Delete quiz</button>
-                        </a></td>
-                    </tr>
-                    <tr>
-                        <th>ID</th>
-                        <th>Question Statement</th>
-                        <th>Actions</th>
-                    </tr>
-                    {% for question in quiz.question %}
-                    <tr>
-                        <td>{{question.id}}</td>
-                        <td>{{question.q_statement}}</td>
-                        <td>
-                            <a href="{{ url_for('edit_question', id=question.id) }}"><button>Edit</button></a> /
-                            <a href="{{ url_for('delete_question', id=question.id) }}"><button>Delete</button></a>
-                        </td>
-                    </tr>
+        <div id="content">
+            {% if search_key %}
+                <h3>Search Results for "{{ search_key }}"</h3>
+                {% if not filtered_quizzes %}
+                    <p class="no-results">No quizzes found</p>
+                {% else %}
+                    {% for quiz in filtered_quizzes %}
+                        <table>
+                            <tr>
+                                <th colspan="3">
+                                    <h3>{{ quiz.chapter.name }} ({{ quiz.chapter.subject.name }})</h3>
+                                </th>
+                                <td>
+                                    <a href="/delete_quiz?id={{ quiz.id }}" style="margin-left: 20px;">
+                                        <button>Delete quiz</button>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>ID</th>
+                                <th>Question Statement</th>
+                                <th>Actions</th>
+                            </tr>
+                            {% for question in quiz.question %}
+                            <tr>
+                                <td>{{ question.id }}</td>
+                                <td>{{ question.q_statement }}</td>
+                                <td>
+                                    <a href="{{ url_for('edit_question', id=question.id) }}"><button>Edit</button></a> /
+                                    <a href="{{ url_for('delete_question', id=question.id) }}"><button>Delete</button></a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            <tr>
+                                <td colspan="4">
+                                    <a href="{{ url_for('add_question', quiz_id=quiz.id) }}">
+                                        <button>+ Add Question</button>
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
                     {% endfor %}
-
-                    <tr>
-                    <td>
-                    <a href="{{ url_for('add_question', quiz_id=quiz.id) }}">
-                        <button>+ Question</button>
-                    </a>
-                    </td>
-                    </tr>
-                </table>
-
-
+                {% endif %}
+            {% else %}
+                {% for subject in subjects %}
+                    {% for chapter in subject.chapters %}
+                        {% for quiz in chapter.quizzes %}
+                            <table>
+                                <tr>
+                                    <th colspan="3">
+                                        <h3>{{ chapter.name }} ({{ subject.name }})</h3>
+                                    </th>
+                                    <td>
+                                        <a href="/delete_quiz?id={{ quiz.id }}" style="margin-left: 20px;">
+                                            <button>Delete quiz</button>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Question Statement</th>
+                                    <th>Actions</th>
+                                </tr>
+                                {% for question in quiz.question %}
+                                <tr>
+                                    <td>{{ question.id }}</td>
+                                    <td>{{ question.q_statement }}</td>
+                                    <td>
+                                        <a href="{{ url_for('edit_question', id=question.id) }}"><button>Edit</button></a> /
+                                        <a href="{{ url_for('delete_question', id=question.id) }}"><button>Delete</button></a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                <tr>
+                                    <td colspan="4">
+                                        <a href="{{ url_for('add_question', quiz_id=quiz.id) }}">
+                                            <button>+ Add Question</button>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        {% endfor %}
                     {% endfor %}
                 {% endfor %}
-            {% endfor %}
+            {% endif %}
         </div>
         
-        <div id = "/add_quiz">
+        <div style="margin: 20px 0;">
             <a href="{{ url_for('add_quiz') }}">
-                <button>Add Quiz</button>
+                <button>+ Create New Quiz</button>
             </a>
+        </div>
 </body>
 </html>
